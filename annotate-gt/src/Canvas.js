@@ -32,7 +32,8 @@ class Canvas extends Component {
       "detection": new this.LC.tools.Rectangle(this.lc)
     };
 
-    window.addEventListener("keydown", (e) => this.handleKeyboard(e), false);
+    this.keyboardListener = this.handleKeyboard.bind(this),
+    window.addEventListener("keydown", this.keyboardListener, false);
 
     this.setState({active: true})
   }
@@ -65,7 +66,6 @@ class Canvas extends Component {
       for (var j = 0; j < snap.shapes.length; j++) {
         const shape = snap.shapes[j]
         var polygon = []
-        console.log(shape)
         for (var k = 0; k < shape.data.pointCoordinatePairs.length; k++) {
           const pair = shape.data.pointCoordinatePairs[k]
           polygon.push({"x": pair[0], "y": pair[1]})
@@ -78,7 +78,6 @@ class Canvas extends Component {
   }
 
   resetImage() {
-    console.log(this.lc.getImage({includeWatermark: false}))
     if (this.state.image_index >= this.props.files.length) {
       var data;
 
@@ -89,9 +88,11 @@ class Canvas extends Component {
         data = this.prepareSegmentation()
       }
 
+      window.removeEventListener("keydown", this.keyboardListener, false);
       this.lc.teardown()
       this.props.finish(JSON.stringify(data, null, '\t'));
     }
+
     else {
       const file = this.props.files[this.state.image_index]
 
@@ -119,6 +120,7 @@ class Canvas extends Component {
         rawData.filename = this.state.image_name
         var allSnapshots = JSON.parse(JSON.stringify(this.state.snapshots))
         allSnapshots.push(rawData)
+        console.log(this.state)
         this.setState({snapshots: allSnapshots})
         this.resetImage()
     }

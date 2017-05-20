@@ -11,5 +11,4 @@ Detection output json is compatible with (Tensorbox)[https://github.com/TensorBo
 ## Roadmap
 - Add support for a labeling mode (specify the class of the photo)
 - Produce zip of segmentation images (use JSZip)
-- Fix restart where `setState` is called on an invalid Component
 - Compile and use the latest LiterallyCanvas js files during build

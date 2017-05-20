@@ -6,7 +6,7 @@ class Opening extends Component {
     super()
     this.state = {
       color: "rgba(255, 0, 0, 0.1)",
-      mode: "segmentation",
+      mode: "detection",
       files: []
     }
   }
@@ -64,8 +64,8 @@ class Opening extends Component {
           <label htmlFor="exampleSelect1">Mode</label>
           <select className="form-control" id="type-select"
             value={this.state.mode} onChange={(e) => this.handleModeChange(e)}>
-            <option value="segmentation">Segmentation</option>
             <option value="detection">Detection</option>
+            <option value="segmentation">Segmentation</option>
           </select>
         </div>
         <div className="form-group">
