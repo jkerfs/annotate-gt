@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import JSZip from "jszip"
 
 class Canvas extends Component {
   constructor() {
@@ -32,19 +32,21 @@ class Canvas extends Component {
       "detection": new this.LC.tools.Rectangle(this.lc)
     };
 
-    this.keyboardListener = this.handleKeyboard.bind(this),
+    this.keyboardListener = this.handleKeyboard.bind(this);
     window.addEventListener("keydown", this.keyboardListener, false);
 
     this.setState({active: true})
   }
 
   prepareDetection() {
-    var data = []
+    var zip = new JSZip();
+    var js = []
     for (var i = 0; i < this.state.snapshots.length; i++) {
-      var snap = this.state.snapshots[i]
+      const snap = this.state.snapshots[i]
       var cur = {"name": snap.filename, "rects": []}
       for (var j = 0; j < snap.shapes.length; j++) {
         var shape = snap.shapes[j]
+        shape.data.fillColor="hsla(0, 0%, 0%, 1)";
         var rect = {
           "x1": shape.data.x,
           "x2": shape.data.x + shape.data.width,
@@ -53,28 +55,41 @@ class Canvas extends Component {
         }
         cur["rects"].push(rect)
       }
-      data.push(cur)
+      this.lc.loadSnapshot(snap);
+      this.lc.getImage({"includeWatermark": false}).toBlob((blob) => {
+        const maskFilename = snap.filename.replace(/\.[^.]+$/, "-mask.png");
+        console.log(maskFilename);
+        zip.file(maskFilename, blob);
+      });
+      js.push(cur)
     }
-    return data;
+    return {"js": js, "zip": zip};
   }
 
   prepareSegmentation() {
-    var data = []
+    var zip = new JSZip();
+    var js = []
+
     for (var i = 0; i < this.state.snapshots.length; i++) {
-      const snap = this.state.snapshots[i]
-      var cur = {"name": snap.filename, "polygons": []}
+      const snap = this.state.snapshots[i];
+      const polygons = [];
+      const cur = {"name": snap.filename, "polygons": []};
+
       for (var j = 0; j < snap.shapes.length; j++) {
-        const shape = snap.shapes[j]
-        var polygon = []
-        for (var k = 0; k < shape.data.pointCoordinatePairs.length; k++) {
-          const pair = shape.data.pointCoordinatePairs[k]
-          polygon.push({"x": pair[0], "y": pair[1]})
-        }
-        cur["polygons"].push(polygon)
+        snap.shapes[j].data.fillColor="hsla(0, 0%, 0%, 1)"
+        polygons.push(snap.shapes[j].data.pointCoordinatePairs);
       }
-      data.push(cur)
+      cur["polygons"] = polygons;
+
+      this.lc.loadSnapshot(snap);
+      this.lc.getImage({"includeWatermark": false}).toBlob((blob) => {
+        const maskFilename = snap.filename.replace(/\.[^.]+$/, "-mask.png");
+        zip.file(maskFilename, blob);
+      });
+
+      js.push(cur);
     }
-    return data;
+    return {"js": js, "zip": zip};
   }
 
   resetImage() {
@@ -90,7 +105,7 @@ class Canvas extends Component {
 
       window.removeEventListener("keydown", this.keyboardListener, false);
       this.lc.teardown()
-      this.props.finish(JSON.stringify(data, null, '\t'));
+      this.props.finish(data);
     }
 
     else {

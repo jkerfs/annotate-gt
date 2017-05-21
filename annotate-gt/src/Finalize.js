@@ -1,28 +1,33 @@
 import React, { Component } from 'react';
+import FileSaver from "file-saver"
 
 
 class Finalize extends Component {
   constructor() {
     super()
-    this.state = {
-      filename: "",
-      href: ""
-    }
   }
 
-  componentDidMount() {
-    const filename = "results.txt"
-    const href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(this.props.text)
-    const download = filename
-    this.setState({href: href, download:download});
+  getZip() {
+    const zip = this.props.data.zip;
+    zip.generateAsync({type:"blob"})
+    .then((content) => {
+        FileSaver.saveAs(content, "masks.zip");
+    });
+  }
+
+  getJs() {
+    const text = JSON.stringify(this.props.data.js, null, '\t');
+    const blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+    FileSaver.saveAs(blob, "results.json")
   }
 
   render() {
     return (
       <div>
         <h1>Finished</h1>
-        <a id="dl-link" href={this.state.href} download={this.state.download}>Download JSON</a><br/>
-        <a id="restart-link" href="#" onClick={() => this.props.restart()}>Restart</a>
+        <button className="btn btn-success" onClick={() => this.getJs()}>Download JSON</button><br/>
+        <button className="btn btn-primary" onClick={() => this.getZip()}>Download ZIP</button><br/>
+        <button className="btn btn-warning" onClick={() => this.props.restart()}>Restart</button>
       </div>
     )
   }

@@ -3,14 +3,13 @@ import './App.css';
 import Opening from './Opening'
 import Canvas from './Canvas'
 import Finalize from './Finalize'
-import JSZip from "jszip"
 
 class App extends Component {
   constructor() {
     super()
     this.state = {
       comp: "Opening",
-      text: ""
+      data: {}
     }
   }
 
@@ -22,7 +21,7 @@ class App extends Component {
   }
 
   handleFinish(o) {
-    this.setState({text: o})
+    this.setState({data: o})
     this.setState({comp: "Finish"})
   }
 
@@ -38,7 +37,7 @@ class App extends Component {
         files={this.state.files} finish={(txt) => this.handleFinish(txt)}/>
     }
     else if (this.state.comp === "Finish") {
-      body = <Finalize restart={() => this.handleRestart()} text={this.state.text}/>
+      body = <Finalize restart={() => this.handleRestart()} data={this.state.data}/>
     }
     else {
       body = <Opening onSubmit={(state) => this.handleStart(state)} />
