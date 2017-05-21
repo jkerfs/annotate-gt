@@ -13,4 +13,3 @@ Detection output json is compatible with (Tensorbox)[https://github.com/TensorBo
 
 ## Roadmap
 - Add support for a labeling mode (specify the class of the photo)
-- Compile and use the latest LiterallyCanvas js files during build
