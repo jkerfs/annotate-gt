@@ -1,13 +1,40 @@
 import React, { Component } from 'react';
+import URLSearchParams from 'url-search-params';
 
 
 class Opening extends Component {
   constructor() {
     super()
+    const params = new URLSearchParams(window.location.search);
+    this.colors = new Map();
+    this.colors.set("red", "rgba(255, 0, 0, 0.1)");
+    this.colors.set("green", "rgba(0, 255, 0, 0.1)");
+    this.colors.set("blue", "rgba(0, 0, 255, 0.1)");
+    this.colors.set("orange", "rgba(255, 180, 0, 0.1)");
+    this.colors.set("yellow", "rgba(255, 255, 0, 0.1)");
+    this.colors.set("purple", "rgba(255, 0, 255, 0.1)");
+    this.modes = ["detection", "segmentation"];
+
+    var color_disabled = false;
+    var start_color = "red";
+    if (params.has("color") && this.colors.has(params.get("color"))) {
+      start_color = params.get("color");
+      color_disabled = true;
+    }
+
+    var mode_disabled = false;
+    var start_mode = "detection";
+    if (params.has("mode") && this.modes.indexOf(params.get("mode")) >= 0) {
+      start_mode = params.get("mode");
+      mode_disabled = true;
+    }
+
     this.state = {
-      color: "rgba(255, 0, 0, 0.1)",
-      mode: "detection",
-      files: []
+      color: start_color,
+      mode: start_mode,
+      files: [],
+      mode_disabled: mode_disabled,
+      color_disabled: color_disabled
     }
   }
 
@@ -25,7 +52,12 @@ class Opening extends Component {
       alert("You must select one or more files")
     }
     else {
-      this.props.onSubmit(this.state)
+      const data = {
+        "color": this.colors.get(this.state.color),
+        "mode": this.state.mode,
+        "files": this.state.files
+      }
+      this.props.onSubmit(data);
     }
   }
 
@@ -46,26 +78,27 @@ class Opening extends Component {
   }
 
   render() {
+    const color_lis = [];
+    for (let val of this.colors.entries()) {
+      color_lis.push(<option key={val[0]} value={val[0]}>{val[0]}</option>)
+    }
+
+    const mode_lis = this.modes.map((v) => <option key={v} value={v}>{v}</option>);
+
     return (
       <form>
         <div className="form-group">
-          <label htmlFor="exampleSelect1">Color</label>
-          <select className="form-control" id="color-select"
+          <label htmlFor="color-select">Color</label>
+          <select disabled={this.state.color_disabled} className="form-control" id="color-select"
             value={this.state.color} onChange={(e) => this.handleColorChange(e)}>
-            <option value="rgba(255, 0, 0, 0.1)">Red</option>
-            <option value="rgba(0, 255, 0, 0.1)">Green</option>
-            <option value="rgba(0, 0, 255, 0.1)">Blue</option>
-            <option value="rgba(255, 180, 0, 0.1)">Orange</option>
-            <option value="rgba(255, 255, 0, 0.1)">Yellow</option>
-            <option value="rgba(255, 0, 255, 0.1)">Purple</option>
+            {color_lis}
           </select>
         </div>
         <div className="form-group">
-          <label htmlFor="exampleSelect1">Mode</label>
-          <select className="form-control" id="type-select"
+          <label htmlFor="mode-select">Mode</label>
+          <select disabled={this.state.mode_disabled} className="form-control" id="mode-select"
             value={this.state.mode} onChange={(e) => this.handleModeChange(e)}>
-            <option value="detection">Detection</option>
-            <option value="segmentation">Segmentation</option>
+            {mode_lis}
           </select>
         </div>
         <div className="form-group">

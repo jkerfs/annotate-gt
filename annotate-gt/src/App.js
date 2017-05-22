@@ -46,7 +46,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="App-header">
-          <h2>Strawberry Image Labeler</h2>
+          <h2>annotate-gt</h2>
         </div>
         <div className="ui-holder">
         { body }

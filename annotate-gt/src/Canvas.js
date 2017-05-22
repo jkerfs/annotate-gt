@@ -58,7 +58,6 @@ class Canvas extends Component {
       this.lc.loadSnapshot(snap);
       this.lc.getImage({"includeWatermark": false}).toBlob((blob) => {
         const maskFilename = snap.filename.replace(/\.[^.]+$/, "-mask.png");
-        console.log(maskFilename);
         zip.file(maskFilename, blob);
       });
       js.push(cur)
@@ -110,13 +109,15 @@ class Canvas extends Component {
 
     else {
       const file = this.props.files[this.state.image_index]
-
       var reader = new FileReader()
-      reader.onload = (function(lc) {
-        return function(e) {
+      reader.onload = ((lc) => {
+        return (e) => {
           var img = new Image()
           img.src = e.target.result;
-          lc.setWatermarkImage(img)
+          img.onload = () => {
+            this.lc.setImageSize(img.width, img.height)
+          }
+        lc.setWatermarkImage(img)
         }
       })(this.lc)
 
@@ -135,7 +136,6 @@ class Canvas extends Component {
         rawData.filename = this.state.image_name
         var allSnapshots = JSON.parse(JSON.stringify(this.state.snapshots))
         allSnapshots.push(rawData)
-        console.log(this.state)
         this.setState({snapshots: allSnapshots})
         this.resetImage()
     }

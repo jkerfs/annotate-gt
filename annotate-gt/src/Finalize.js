@@ -3,10 +3,6 @@ import FileSaver from "file-saver"
 
 
 class Finalize extends Component {
-  constructor() {
-    super()
-  }
-
   getZip() {
     const zip = this.props.data.zip;
     zip.generateAsync({type:"blob"})
