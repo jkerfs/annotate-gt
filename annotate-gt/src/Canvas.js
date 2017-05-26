@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import JSZip from "jszip"
+import Nav from './Nav'
+
 
 class Canvas extends Component {
   constructor() {
@@ -130,16 +132,30 @@ class Canvas extends Component {
     }
   }
 
+  next () {
+    const rawData = this.lc.getSnapshot(["shapes", "colors"])
+    rawData.filename = this.state.image_name
+    var allSnapshots = JSON.parse(JSON.stringify(this.state.snapshots))
+    allSnapshots.push(rawData)
+    this.setState({snapshots: allSnapshots})
+    this.resetImage()
+  }
+
   handleKeyboard(e) {
     if (e.key === "ArrowRight") {
-        const rawData = this.lc.getSnapshot(["shapes", "colors"])
-        rawData.filename = this.state.image_name
-        var allSnapshots = JSON.parse(JSON.stringify(this.state.snapshots))
-        allSnapshots.push(rawData)
-        this.setState({snapshots: allSnapshots})
-        this.resetImage()
+      this.next()
     }
   }
+
+  handleNavAction(a) {
+    if (a === 'n') {
+      this.next();
+    }
+    /*
+    TODO implement p, c, u
+    */
+  }
+
 
   render() {
     if (this.state.active) {
@@ -148,7 +164,10 @@ class Canvas extends Component {
     }
 
     return (
+      <div>
       <div className="literally core"></div>
+      <Nav actionEventHandler={(a) => this.handleNavAction(a)}/>
+      </div>
     )
   }
 }
