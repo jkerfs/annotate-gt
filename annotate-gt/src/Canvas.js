@@ -46,7 +46,7 @@ class Canvas extends Component {
     var js = []
     for (var i = 0; i < this.state.snapshots.length; i++) {
       const snap = this.state.snapshots[i]
-      var cur = {"name": snap.filename, "rects": []}
+      var cur = {"image_path": snap.filename, "rects": []}
       for (var j = 0; j < snap.shapes.length; j++) {
         var shape = snap.shapes[j]
         shape.data.fillColor="hsla(0, 0%, 0%, 1)";
