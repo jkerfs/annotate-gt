@@ -19,7 +19,8 @@ class Canvas extends Component {
     this.LC = window.LC;
 
     var ops = {
-      imageSize: {width: 1024, height: 720}
+      imageSize: {width: 1024, height: 720},
+      defaultStrokeWidth: 2
     }
 
     this.lc = this.LC.init(document.getElementsByClassName('literally core')[0], ops);
@@ -157,16 +158,19 @@ class Canvas extends Component {
     if (a === 'n') {
       this.next();
     }
-    /*
-    TODO implement p, c, u
-    */
+    if (a === 'c') {
+      this.lc.clear();
+    }
+    if (a === 'u') {
+      this.lc.undo();
+    }
   }
 
 
   render() {
     if (this.state.active) {
       this.lc.setTool(this.tools[this.props.mode]);
-      this.lc.setColor("secondary", this.props.color)
+      this.lc.setColor("secondary", this.props.color);
     }
 
     return (
