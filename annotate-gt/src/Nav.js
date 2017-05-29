@@ -4,6 +4,7 @@ class Nav extends Component {
 
   render() {
     return (
+      <div>
       <nav>
         <ul className="pager">
           <li className="previous"><a href="#" onClick={() => this.props.actionEventHandler('p')}><span aria-hidden="true">&larr;</span> Previous</a></li>
@@ -12,6 +13,8 @@ class Nav extends Component {
           <li className="next"><a href="#" onClick={() => this.props.actionEventHandler('n')}>Next <span aria-hidden="true">&rarr;</span></a></li>
         </ul>
       </nav>
+      <center><h2>{this.props.image_name} ({this.props.image_index} / {this.props.total_images})</h2></center>
+      </div>
     )
   }
 }

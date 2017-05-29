@@ -19,7 +19,7 @@ class Canvas extends Component {
     this.LC = window.LC;
 
     var ops = {
-      imageSize: {width: 1000, height: 750}
+      imageSize: {width: 1024, height: 720}
     }
 
     this.lc = this.LC.init(document.getElementsByClassName('literally core')[0], ops);
@@ -27,7 +27,7 @@ class Canvas extends Component {
     this.resetImage()
     this.lc.setColor("background", "transparent")
     this.lc.setColor("secondary", "rgba(255, 0, 0, 0.1)")
-    this.lc.setImageSize(1000, 750)
+    this.lc.setImageSize(1024, 720)
 
     this.tools = {
       "segmentation": new this.LC.tools.Polygon(this.lc),
@@ -96,7 +96,6 @@ class Canvas extends Component {
   resetImage() {
     if (this.state.image_index >= this.props.files.length) {
       var data;
-
       if (this.props.mode === "detection") {
         data = this.prepareDetection()
       }
@@ -117,9 +116,16 @@ class Canvas extends Component {
           var img = new Image()
           img.src = e.target.result;
           img.onload = () => {
-            this.lc.setImageSize(img.width, img.height)
+            const canvas_width = document.getElementById('canvas').clientWidth;
+            const canvas_height = document.getElementById('canvas').clientHeight;
+            const width_scale = canvas_width / img.width;
+            const height_scale = canvas_height / img.height;
+            const scale = Math.min(width_scale, height_scale);
+            this.lc.watermarkScale = scale;
+            this.lc.setImageSize(img.width, img.height);
+            this.lc.setZoom(scale);
           }
-        lc.setWatermarkImage(img)
+        lc.setWatermarkImage(img);
         }
       })(this.lc)
 
@@ -165,8 +171,9 @@ class Canvas extends Component {
 
     return (
       <div>
-      <div className="literally core"></div>
-      <Nav actionEventHandler={(a) => this.handleNavAction(a)}/>
+      <div className="literally core" id="canvas"></div>
+      <Nav actionEventHandler={(a) => this.handleNavAction(a)} image_name={this.state.image_name}
+      image_index={this.state.image_index} total_images={this.props.files.length}/>
       </div>
     )
   }
